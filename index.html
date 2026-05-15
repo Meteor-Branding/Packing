@@ -16,37 +16,37 @@
     --rule:        #d9d9d9;
     --rule-soft:   #ececec;
     --paper:       #ffffff;
-    --page-w:      794px;   /* A4 width  = 210mm @ 96dpi */
-    --page-h:      1123px;  /* A4 height = 297mm @ 96dpi */
   }
 
   * { box-sizing: border-box; }
 
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   html, body {
     margin: 0;
     padding: 0;
-    background: #ededed;
+    background: #ffffff;
     font-family: 'Montserrat', system-ui, -apple-system, Arial, sans-serif;
     color: var(--ink);
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
-  /* ---------- Page sheet ---------- */
-  .sheet-wrap {
-    display: flex;
-    justify-content: center;
-    padding: 40px 16px 64px;
-  }
+  /* ---------- Page sheet ----------
+     縮成 190mm x 270mm,讓 Gotenberg 預設 margin 也容得下,且留安全邊距。 */
   .sheet {
-    width: var(--page-w);
-    min-height: var(--page-h);
-    background: var(--paper);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 20px 60px rgba(0,0,0,0.12);
-    padding: 56px 56px 36px;
-    display: flex;
-    flex-direction: column;
     position: relative;
+    width: 190mm;
+    height: 270mm;
+    margin: 0 auto;
+    background: var(--paper);
+    padding: 12mm 12mm 8mm 12mm;
+    overflow: hidden;
   }
 
   /* ---------- Header ---------- */
@@ -56,6 +56,7 @@
     justify-content: space-between;
     gap: 32px;
     padding-bottom: 44px;
+    height: 100px;
   }
   .logo {
     height: 44px;
@@ -111,7 +112,6 @@
     color: var(--ink);
     padding: 2px 0;
   }
-
   .pl-table thead.cols th {
     font-size: 10px;
     font-weight: 700;
@@ -124,31 +124,11 @@
     padding: 16px 18px;
   }
   .pl-table thead.cols th.num-col { text-align: center; }
-
-  .pl-table tbody tr.data-row {
-    background: #ffffff;
-    border-bottom: none;
-  }
+  .pl-table tbody tr.data-row { background: #ffffff; }
   .pl-table tbody tr.data-row td { border: none; background: #ffffff; }
-
-  .pl-table td.num-cell {
-    white-space: nowrap;
-    text-align: center;
-  }
-  .cell-value {
-    font-family: inherit;
-    font-size: 11px;
-    color: var(--ink-soft);
-    padding: 2px 0;
-  }
-  .unit {
-    font-size: 11px;
-    color: var(--ink-soft);
-  }
-
-  /* Total row */
-  tr.total-row { background: #ffffff; }
-  .pl-table tfoot { background: #ffffff; }
+  .pl-table td.num-cell { white-space: nowrap; text-align: center; }
+  .cell-value { font-size: 11px; color: var(--ink-soft); padding: 2px 0; }
+  .unit { font-size: 11px; color: var(--ink-soft); }
   tr.total-row td {
     padding-top: 22px;
     padding-bottom: 22px;
@@ -166,14 +146,17 @@
   }
   tr.total-row td.num-cell { text-align: center; }
 
-  /* ---------- Footer area ---------- */
-  .sheet-spacer { flex: 1 1 auto; min-height: 40px; }
-
+  /* ---------- Bottom block: 用絕對定位釘在頁底 ---------- */
+  .bottom-area {
+    position: absolute;
+    left: 12mm;
+    right: 12mm;
+    bottom: 15mm;
+  }
   .company-block {
     display: flex;
     justify-content: flex-end;
-    margin-top: 24px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
   .company-block .info {
     text-align: right;
@@ -189,16 +172,12 @@
     margin-bottom: 6px;
   }
   .company-block .info .phones { color: #4a4a4a; }
-  .company-block .info a {
-    color: var(--ink);
-    text-decoration: none;
-  }
 
   .doc-foot {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 18px;
+    padding-top: 14px;
     border-top: 1px solid var(--rule);
     font-size: 10px;
     color: var(--ink);
@@ -208,102 +187,73 @@
     font-weight: 600;
     letter-spacing: 0.12em;
   }
-
-  /* ---------- Print (Gotenberg / headless Chromium) ---------- */
-  @media print {
-    @page {
-      size: A4;            /* 跟 Gotenberg 的 Paper Size 一致 */
-      margin: 0;
-    }
-    html, body {
-      background: #fff;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-    .sheet-wrap { padding: 0; }
-    .sheet {
-      box-shadow: none;
-      width: 210mm;
-      height: 297mm;       /* 固定一頁 A4 */
-      min-height: 297mm;
-      max-height: 297mm;
-      padding: 40px 56px 28px;   /* 縮小上下 padding 騰出空間 */
-      overflow: hidden;          /* 防止任何溢出被推到第二頁 */
-      page-break-after: avoid;
-      page-break-inside: avoid;
-    }
-    .pl-table tbody tr.data-row:nth-of-type(odd)  { background: #ffffff !important; }
-    .pl-table tbody tr.data-row:nth-of-type(even) { background: #efefef !important; }
-  }
 </style>
 </head>
 <body>
 
-<div class="sheet-wrap">
-  <div class="sheet">
+<div class="sheet">
 
-    <!-- Header -->
-    <header class="doc-header" style="height: 100px">
-      <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 239.3" style="width: 200px; height: 40px; display: block;" aria-label="Meteor">
-        <polygon fill="#111111" points="198.92 0 259.51 230.78 229.82 230.78 193.21 89.78 130.02 239.3 66.66 88.55 29.51 230.78 0 230.78 60.61 0 129.99 165.14 198.92 0"/>
-        <polygon fill="#111111" points="306.05 9.21 428.79 9.21 428.79 39.46 335.96 39.46 335.96 94.79 428.79 94.79 428.79 124.71 335.96 124.71 335.96 200.89 428.79 200.89 428.79 230.78 306.05 230.78 306.05 9.21"/>
-        <polygon fill="#111111" points="468.72 9.21 604.18 9.21 604.18 39.46 551.32 39.46 551.32 230.78 521.42 230.78 521.42 39.46 468.72 39.46 468.72 9.21"/>
-        <polygon fill="#111111" points="653.66 9.21 776.46 9.21 776.46 39.46 683.57 39.46 683.57 94.79 776.46 94.79 776.46 124.71 683.57 124.71 683.57 200.89 776.46 200.89 776.46 230.78 653.66 230.78 653.66 9.21"/>
-        <path fill="#111111" d="M1097.01,35.98v77.24c44.65.93,66.97-11.97,66.97-38.79,0-9.37-2.64-17.09-7.84-23.04-5.23-5.98-12.19-10.04-20.83-12.19-8.75-2.16-21.49-3.22-38.31-3.22ZM1066.79,9.21h47.99c23.87,0,43.33,5.97,58.32,17.81,15.08,11.86,22.56,27.09,22.56,45.65,0,14.84-4.88,27.95-14.56,39.32-9.71,11.29-24.9,19.35-45.49,23.99l64.38,94.8h-34.7l-61.47-91.13h-6.82v91.13h-30.23V9.21Z"/>
-        <path fill="#d2d2d2" d="M834.53,220.36c0,8.28,39.57,14.98,88.35,14.98s88.28-6.7,88.28-14.98-39.55-15-88.28-15-88.35,6.73-88.35,15Z"/>
-        <path fill="#f8b62d" d="M868.97,114.3c7.64,15.37,19.31,25.84,35.03,31.37,15.76,5.58,31.09,4.59,46.1-2.81,15.12-7.49,25.3-19.09,30.55-34.8,5.23-15.77,3.94-31.42-3.79-47.1-7.57-15.37-19.29-25.84-34.99-31.39-15.79-5.53-31.16-4.57-46.36,2.92-15.1,7.43-25.25,19.08-30.38,34.88-5.06,15.76-3.78,31.4,3.85,46.93ZM884.47,10.2c22.16-10.92,44.28-12.65,66.48-5.14,22.16,7.5,38.65,22.22,49.55,44.23,10.82,21.95,12.49,44.04,5.04,66.18-7.5,22.17-22.33,38.76-44.46,49.68-22.12,10.94-44.23,12.67-66.24,5.2-22.12-7.42-38.58-22.23-49.5-44.34-10.92-22-12.63-44.05-5.23-66.16,7.35-22.12,22.13-38.65,44.35-49.66"/>
-      </svg>
-      <div class="doc-title">PACKING LIST</div>
-    </header>
+  <!-- Header -->
+  <header class="doc-header">
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 239.3" style="width: 200px; height: 40px; display: block;" aria-label="Meteor">
+      <polygon fill="#111111" points="198.92 0 259.51 230.78 229.82 230.78 193.21 89.78 130.02 239.3 66.66 88.55 29.51 230.78 0 230.78 60.61 0 129.99 165.14 198.92 0"/>
+      <polygon fill="#111111" points="306.05 9.21 428.79 9.21 428.79 39.46 335.96 39.46 335.96 94.79 428.79 94.79 428.79 124.71 335.96 124.71 335.96 200.89 428.79 200.89 428.79 230.78 306.05 230.78 306.05 9.21"/>
+      <polygon fill="#111111" points="468.72 9.21 604.18 9.21 604.18 39.46 551.32 39.46 551.32 230.78 521.42 230.78 521.42 39.46 468.72 39.46 468.72 9.21"/>
+      <polygon fill="#111111" points="653.66 9.21 776.46 9.21 776.46 39.46 683.57 39.46 683.57 94.79 776.46 94.79 776.46 124.71 683.57 124.71 683.57 200.89 776.46 200.89 776.46 230.78 653.66 230.78 653.66 9.21"/>
+      <path fill="#111111" d="M1097.01,35.98v77.24c44.65.93,66.97-11.97,66.97-38.79,0-9.37-2.64-17.09-7.84-23.04-5.23-5.98-12.19-10.04-20.83-12.19-8.75-2.16-21.49-3.22-38.31-3.22ZM1066.79,9.21h47.99c23.87,0,43.33,5.97,58.32,17.81,15.08,11.86,22.56,27.09,22.56,45.65,0,14.84-4.88,27.95-14.56,39.32-9.71,11.29-24.9,19.35-45.49,23.99l64.38,94.8h-34.7l-61.47-91.13h-6.82v91.13h-30.23V9.21Z"/>
+      <path fill="#d2d2d2" d="M834.53,220.36c0,8.28,39.57,14.98,88.35,14.98s88.28-6.7,88.28-14.98-39.55-15-88.28-15-88.35,6.73-88.35,15Z"/>
+      <path fill="#f8b62d" d="M868.97,114.3c7.64,15.37,19.31,25.84,35.03,31.37,15.76,5.58,31.09,4.59,46.1-2.81,15.12-7.49,25.3-19.09,30.55-34.8,5.23-15.77,3.94-31.42-3.79-47.1-7.57-15.37-19.29-25.84-34.99-31.39-15.79-5.53-31.16-4.57-46.36,2.92-15.1,7.43-25.25,19.08-30.38,34.88-5.06,15.76-3.78,31.4,3.85,46.93ZM884.47,10.2c22.16-10.92,44.28-12.65,66.48-5.14,22.16,7.5,38.65,22.22,49.55,44.23,10.82,21.95,12.49,44.04,5.04,66.18-7.5,22.17-22.33,38.76-44.46,49.68-22.12,10.94-44.23,12.67-66.24,5.2-22.12-7.42-38.58-22.23-49.5-44.34-10.92-22-12.63-44.05-5.23-66.16,7.35-22.12,22.13-38.65,44.35-49.66"/>
+    </svg>
+    <div class="doc-title">PACKING LIST</div>
+  </header>
 
-    <!-- Table -->
-    <table class="pl-table">
-      <thead class="meta">
-        <tr>
-          <th style="width: 50%; line-height: 1.4">
-            <span class="meta-label" style="font-size: 12px">Date</span>
-            <div class="meta-value">{{DATE}}</div>
-          </th>
-          <th colspan="4" style="text-align: left; font-family: Montserrat; letter-spacing: 1.4px; font-weight: 700; line-height: 1.4; height: 70px">
-            <span class="meta-label" style="font-size: 12px">P.O #</span>
-            <div class="meta-value">{{PO_NUMBER}}</div>
-          </th>
-        </tr>
-      </thead>
-      <thead class="cols">
-        <tr>
-          <th style="width: 330px; font-size: 11px">Item No.</th>
-          <th class="num-col" style="width: 15%; font-size: 11px">Qty</th>
-          <th class="num-col" style="width: 15%; font-size: 10px">Qty / Box</th>
-          <th class="num-col" style="width: 10%; font-size: 11px">Carton(s)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- ITEM_ROWS_START -->
-        <tr class="data-row">
-          <td><span class="cell-value">{{ITEM_NO}}</span></td>
-          <td class="num-cell"><span class="cell-value">{{QTY}}</span> <span class="unit">PC</span></td>
-          <td class="num-cell"><span class="cell-value">{{QTY_BOX}}</span> <span class="unit">PC</span></td>
-          <td class="num-cell"><span class="cell-value">{{CTN}}</span> <span class="unit">CTN(S)</span></td>
-        </tr>
-        <!-- ITEM_ROWS_END -->
-      </tbody>
-<tfoot>
-  <tr class="total-row">
-    <td class="total-label">Total</td>
-    <td class="num-cell">{{TOTAL_QTY}}&nbsp;<span class="unit">PC</span></td>
-    <td class="num-cell"></td>
-    <td class="num-cell">{{TOTAL_CTN}}&nbsp;<span class="unit">CTN(S)</span></td>
-  </tr>
-</tfoot>
-    </table>
+  <!-- Table -->
+  <table class="pl-table">
+    <thead class="meta">
+      <tr>
+        <th style="width: 50%; line-height: 1.4">
+          <span class="meta-label" style="font-size: 12px">Date</span>
+          <div class="meta-value">{{DATE}}</div>
+        </th>
+        <th colspan="4" style="text-align: left; letter-spacing: 1.4px; font-weight: 700; line-height: 1.4; height: 70px">
+          <span class="meta-label" style="font-size: 12px">P.O #</span>
+          <div class="meta-value">{{PO_NUMBER}}</div>
+        </th>
+      </tr>
+    </thead>
+    <thead class="cols">
+      <tr>
+        <th style="width: 330px; font-size: 11px">Item No.</th>
+        <th class="num-col" style="width: 15%; font-size: 11px">Qty</th>
+        <th class="num-col" style="width: 15%; font-size: 10px">Qty / Box</th>
+        <th class="num-col" style="width: 10%; font-size: 11px">Carton(s)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- ITEM_ROWS_START -->
+      <tr class="data-row">
+        <td><span class="cell-value">{{ITEM_NO}}</span></td>
+        <td class="num-cell"><span class="cell-value">{{QTY}}</span> <span class="unit">PC</span></td>
+        <td class="num-cell"><span class="cell-value">{{QTY_BOX}}</span> <span class="unit">PC</span></td>
+        <td class="num-cell"><span class="cell-value">{{CTN}}</span> <span class="unit">CTN(S)</span></td>
+      </tr>
+      <!-- ITEM_ROWS_END -->
+    </tbody>
+    <tfoot>
+      <tr class="total-row">
+        <td class="total-label">Total</td>
+        <td class="num-cell">{{TOTAL_QTY}}&nbsp;<span class="unit">PC</span></td>
+        <td class="num-cell"></td>
+        <td class="num-cell">{{TOTAL_CTN}}&nbsp;<span class="unit">CTN(S)</span></td>
+      </tr>
+    </tfoot>
+  </table>
 
-    <div class="sheet-spacer"></div>
-
-    <!-- Company info -->
+  <!-- Bottom area: 絕對定位釘在頁底 -->
+  <div class="bottom-area">
     <div class="company-block">
       <div class="info">
-        <div class="name" style="font-weight: 700">Meteor Lighting</div>
+        <div class="name">Meteor Lighting</div>
         <div class="phones">P: 213 255 2060</div>
         <div class="phones">F: 213 596 3704</div>
         <div style="margin-top:8px;">1860 S Carlos Ave,</div>
@@ -311,13 +261,11 @@
         <div style="margin-top:8px;">www.meteor-lighting.com</div>
       </div>
     </div>
-
-    <!-- Foot rule -->
     <div class="doc-foot">
       <div class="left">METEOR ILLUMINATION TECHNOLOGIES INC.</div>
     </div>
-
   </div>
+
 </div>
 
 </body>
