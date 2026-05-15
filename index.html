@@ -18,7 +18,7 @@
     --paper:       #ffffff;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
   @page {
     size: A4;
@@ -28,9 +28,13 @@
   html, body {
     margin: 0;
     padding: 0;
+    width: 210mm;
+    height: 297mm;
+    overflow: hidden;
     background: #ffffff;
     font-family: 'Montserrat', system-ui, -apple-system, Arial, sans-serif;
     color: var(--ink);
+    line-height: 1;
     -webkit-font-smoothing: antialiased;
     text-rendering: geometricPrecision;
     -webkit-print-color-adjust: exact;
@@ -38,14 +42,15 @@
   }
 
   /* ---------- Page sheet ----------
-     縮成 190mm x 275mm,讓 Gotenberg 預設 margin 也容得下,且留安全邊距。 */
+     用 absolute 釘在 body 內,完全脫離文檔流,不會被任何垂直邊距推開。 */
   .sheet {
-    position: relative;
-    width: 190mm;
-    height: 275mm;
-    margin: 0 auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 210mm;
+    height: 297mm;
     background: var(--paper);
-    padding: 12mm 12mm 8mm 12mm;
+    padding: 14mm 14mm 0 14mm;
     overflow: hidden;
   }
 
@@ -149,9 +154,9 @@
   /* ---------- Bottom block: 用絕對定位釘在頁底 ---------- */
   .bottom-area {
     position: absolute;
-    left: 12mm;
-    right: 12mm;
-    bottom: 8mm;
+    left: 14mm;
+    right: 14mm;
+    bottom: 12mm;
   }
   .company-block {
     display: flex;
