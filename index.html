@@ -167,13 +167,13 @@
   tr.total-row td.num-cell { text-align: center; }
 
   /* ---------- Footer area ---------- */
-  .sheet-spacer { flex: 1 1 auto; min-height: 80px; }
+  .sheet-spacer { flex: 1 1 auto; min-height: 40px; }
 
   .company-block {
     display: flex;
     justify-content: flex-end;
-    margin-top: 40px;
-    margin-bottom: 28px;
+    margin-top: 24px;
+    margin-bottom: 20px;
   }
   .company-block .info {
     text-align: right;
@@ -224,9 +224,13 @@
     .sheet {
       box-shadow: none;
       width: 210mm;
-      height: 297mm;       /* 關鍵:用固定 height,flex:1 的 spacer 才能正確撐開 */
+      height: 297mm;       /* 固定一頁 A4 */
       min-height: 297mm;
-      padding: 48px 56px 32px;
+      max-height: 297mm;
+      padding: 40px 56px 28px;   /* 縮小上下 padding 騰出空間 */
+      overflow: hidden;          /* 防止任何溢出被推到第二頁 */
+      page-break-after: avoid;
+      page-break-inside: avoid;
     }
     .pl-table tbody tr.data-row:nth-of-type(odd)  { background: #ffffff !important; }
     .pl-table tbody tr.data-row:nth-of-type(even) { background: #efefef !important; }
